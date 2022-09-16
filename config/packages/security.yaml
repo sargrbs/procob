@@ -31,11 +31,11 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/user, roles: ROLE_ADMIN }
         - { path: ^/products/new, roles: ROLE_ADMIN }
-        - { path: ^/products/edit/{id}, roles: ROLE_ADMIN }
-        - { path: ^/products/delete/{id}, roles: ROLE_ADMIN }
+        - { path: ^/products/edit/, roles: ROLE_ADMIN }
+        - { path: ^/products/delete/, roles: ROLE_ADMIN }
         - { path: ^/products/disabled, roles: ROLE_ADMIN }
-        - { path: ^/products/disable/{id}, roles: ROLE_ADMIN }
-        - { path: ^/order/edit/{id}, roles: ROLE_ADMIN }
+        - { path: ^/products/disable/, roles: ROLE_ADMIN }
+        - { path: ^/order/edit/, roles: ROLE_ADMIN }
 
         
 
