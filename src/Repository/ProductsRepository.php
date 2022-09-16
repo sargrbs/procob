@@ -46,6 +46,7 @@ class ProductsRepository extends ServiceEntityRepository
         $query = $entityManager->createQuery(
             'SELECT u.id, u.description, u.status, u.price
             FROM App\Entity\Products u
+            WHERE u.status = true
             ORDER BY u.description ASC'
         );
 
