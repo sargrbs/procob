@@ -28,8 +28,6 @@ security:
                 realm: "Secured Demo Area"
 
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/user, roles: ROLE_ADMIN }
         - { path: ^/products/new, roles: ROLE_ADMIN }
         - { path: ^/products/edit/, roles: ROLE_ADMIN }
         - { path: ^/products/delete/, roles: ROLE_ADMIN }
