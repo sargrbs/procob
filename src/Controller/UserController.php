@@ -8,10 +8,8 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 /**
  * @Route("/user")
  */
@@ -20,80 +18,132 @@ class UserController extends AbstractController
     /**
      * @Route("/", name="app_user_index", methods={"GET"})
      */
-    public function index(SerializerInterface $serializer, UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository): Response
     {
-        /**  return $this->render('user/index.html.twig', [
-         *    'users' => $userRepository->findAll(),
-        * ]); 
-        */
-        // dd($userRepository->findAll());
-
-        $users = $userRepository->findAll();
-        
-
-        return $this->json($users);
+        return $this->json([
+            'users' => $userRepository->findAll(),
+        ]);
     }
 
     /**
-     * @Route("/new", name="app_user_new", methods={"GET", "POST"})
+     * @Route("/new", name="app_user_new", methods={"POST"})
      */
-    public function new(Request $request, UserRepository $userRepository): Response
+    public function new(Request $request, UserRepository $userRepository, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+        $data = json_decode($request->getContent(), true);
+        $hashedPassword = $passwordHasher->hashPassword(
+            $user,   
+            $data['password']
+        );
+        $user
+            ->setName($data['name'])
+            ->setEmail($data['email'])
+            ->setStatus($data['status'])
+            ->setPrivilege($data['privilege'])
+            ->setPassword($hashedPassword)
+            ->setCreatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
+            ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
+        ;
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->add($user, true);
+        $doctrine = $this->getDoctrine()->getManager();
+        $doctrine->persist($user);
+        $doctrine->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
+        return $this->json([
+            'UserCreated' => $user
+        ]);
 
-        return $this->renderForm('user/new.html.twig', [
+    }
+
+    /**
+     * @Route("/findOne/{id}", name="app_user_show", methods={"GET"})
+     */
+    public function show($id): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->findOne($id);
+
+        return $this->json([
             'user' => $user,
-            'form' => $form,
         ]);
     }
 
     /**
-     * @Route("/{id}", name="app_user_show", methods={"GET"})
+     * @Route("/edit/{id}", name="_editUser", methods={"PUT"})
      */
-    public function show(User $user): Response
+    public function edit(Request $request, $id): Response
     {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
+        $data = json_decode($request->getContent(), true);
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        $user
+            ->setName($data['name'])
+            ->setEmail($data['email'])
+            ->setStatus($data['status'])
+            ->setPrivilege($data['privilege'])
+            ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
+        ;
+
+        $doctrine = $this->getDoctrine()->getManager();
+        $doctrine->flush();
+
+        return $this->json([
+            'UserUpdated' => $user
+        ]);
+        
+    }
+
+    /**
+     * @Route("/delete/{id}", name="_deleteUser", methods={"DELETE"})
+     * 
+     */
+    public function delete($id): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->find($id);
+ 
+        if (!$user) {
+            return $this->json( [
+                "Error" => 'No user found for id' ." ".$id,
+            ]);
+        }
+ 
+        $entityManager->remove($user);
+        $entityManager->flush();
+ 
+        return $this->json([
+                "SuccessUserDeleted" => $user
+        ]);
+ 
+    }
+
+    /**
+     * @Route("/active", name="app_user_active", methods={"GET"})
+     */
+    public function active(): Response
+    {   
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $userActive =  $entityManager->getRepository(User::class)
+                            ->findAllActive(true);
+   
+        return $this->json([
+            'user' => $userActive,
         ]);
     }
 
     /**
-     * @Route("/{id}/edit", name="app_user_edit", methods={"GET", "POST"})
+     * @Route("/disabled", name="app_user_disabled", methods={"GET"})
      */
-    public function edit(Request $request, User $user, UserRepository $userRepository): Response
+    public function disabled(): Response
     {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->add($user, true);
-
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form,
+        $entityManager = $this->getDoctrine()->getManager();
+        $userDisabled =  $entityManager->getRepository(User::class)
+                                    ->findAllActive(false);
+        return $this->json([
+            'user' => $userDisabled,
         ]);
-    }
-
-    /**
-     * @Route("/{id}", name="app_user_delete", methods={"POST"})
-     */
-    public function delete(Request $request, User $user, UserRepository $userRepository): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
-            $userRepository->remove($user, true);
-        }
-
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
 }
