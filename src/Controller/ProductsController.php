@@ -62,7 +62,7 @@ class ProductsController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="app_products_edit", methods={"PUT"})
+     * @Route("/edit/{id}", name="app_products_edit", methods={"PUT"})
      */
     public function edit(Request $request, $id): Response
     {
@@ -70,7 +70,11 @@ class ProductsController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $entityManager = $this->getDoctrine()->getManager();
         $product = $entityManager->getRepository(Products::class)->find($id);
-
+        if (!$product) {
+            return $this->json( [
+                "Error" => 'No produtc found for id' ." ".$id,
+            ]);
+        }
         $product
             ->setDescription($data['description'])
             ->setPrice($data['price'])
@@ -92,19 +96,19 @@ class ProductsController extends AbstractController
     public function delete($id): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $produtc = $entityManager->getRepository(Products::class)->find($id);
+        $product = $entityManager->getRepository(Products::class)->find($id);
  
-        if (!$produtc) {
+        if (!$product) {
             return $this->json( [
-                "Error" => 'No produtc found for id' ." ".$id,
+                "Error" => 'No product found for id' ." ".$id,
             ]);
         }
  
-        $entityManager->remove($produtc);
+        $entityManager->remove($product);
         $entityManager->flush();
  
         return $this->json([
-                "SuccessDeleted" => $produtc
+                "SuccessDeleted" => $product
         ]);
     }
 

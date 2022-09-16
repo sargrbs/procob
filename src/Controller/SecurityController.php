@@ -20,8 +20,11 @@ class SecurityController extends AbstractController
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        $data = json_decode($request->getContent(), true);
-        return $this->json(['UserLogged' => $data['username'], 'error' => $error]);
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+        $email = $propertyAccessor->getValue($user, 'email');
+        return $this->json(['UserLogged' => $email, 'error' => $error]);
     }
 
     /**

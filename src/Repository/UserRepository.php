@@ -87,7 +87,7 @@ class UserRepository extends  ServiceEntityRepository  implements PasswordUpgrad
         $entityManager = $this->getEntityManager();
 
         $query = $entityManager->createQuery(
-            'SELECT u.id, u.name, u.email, u.status
+            'SELECT u.id, u.name, u.email, u.status, u.roles
             FROM App\Entity\User u
             ORDER BY u.name ASC'
         );

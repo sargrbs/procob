@@ -40,6 +40,21 @@ class Order
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $CreatedAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $UpdatedAt;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $paid_purchase;
+
     public function __construct()
     {
         $this->product = new ArrayCollection();
@@ -106,6 +121,42 @@ class Order
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->CreatedAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $CreatedAt): self
+    {
+        $this->CreatedAt = $CreatedAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->UpdatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $UpdatedAt): self
+    {
+        $this->UpdatedAt = $UpdatedAt;
+
+        return $this;
+    }
+
+    public function isPaidPurchase(): ?bool
+    {
+        return $this->paid_purchase;
+    }
+
+    public function setPaidPurchase(bool $paid_purchase): self
+    {
+        $this->paid_purchase = $paid_purchase;
 
         return $this;
     }

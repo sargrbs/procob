@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Order;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -39,28 +40,93 @@ class OrderRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Order[] Returns an array of Order objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('o')
-//            ->andWhere('o.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('o.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findOne($id)
+    {
+        $entityManager = $this->getEntityManager();
 
-//    public function findOneBySomeField($value): ?Order
-//    {
-//        return $this->createQueryBuilder('o')
-//            ->andWhere('o.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $entityManager->createQuery(
+            'SELECT o.id, 
+                o.order_number, 
+                o.paid_purchase, 
+                o.status, 
+                u.name as UserName,
+                u.id as UserId,
+                p.id as ProductId,
+                p.price as ProductPrice,
+                p.description as ProductDescription
+            FROM App\Entity\Order o
+            INNER JOIN o.user u
+            INNER JOIN o.product p
+            WHERE o.id = :id'
+        )->setParameter('id', $id);
+
+        return $query->getResult();
+    }
+
+    public function findAll()
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT o.id, 
+                o.order_number, 
+                o.paid_purchase, 
+                o.status, 
+                u.name as UserName,
+                u.id as UserId,
+                p.id as ProductId,
+                p.price as ProductPrice,
+                p.description as ProductDescription
+            FROM App\Entity\Order o
+            INNER JOIN o.user u
+            INNER JOIN o.product p'
+        );
+
+        return $query->getResult();
+    }
+
+    public function findAllActive($status)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT o.id, 
+                o.order_number, 
+                o.paid_purchase, 
+                o.status, 
+                u.name as UserName,
+                u.id as UserId,
+                p.id as ProductId,
+                p.price as ProductPrice,
+                p.description as ProductDescription
+            FROM App\Entity\Order o
+            INNER JOIN o.user u
+            INNER JOIN o.product p
+            WHERE o.status = :stt'
+        )->setParameter('stt', $status);
+
+        return $query->getResult();
+    }
+    public function findAllpaid($paid)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT o.id, 
+                o.order_number, 
+                o.paid_purchase, 
+                o.status, 
+                u.name as UserName,
+                u.id as UserId,
+                p.id as ProductId,
+                p.price as ProductPrice,
+                p.description as ProductDescription
+            FROM App\Entity\Order o
+            INNER JOIN o.user u
+            INNER JOIN o.product p
+            WHERE o.paid_purchase = :paid'
+        )->setParameter('paid', $paid);
+
+        return $query->getResult();
+    }
 }
