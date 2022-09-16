@@ -8,7 +8,7 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
+.env
 mysql
-/docker-compose.yml
-/docker-compose.override.yml
+docker-compose.yml
+docker-compose.override.yml

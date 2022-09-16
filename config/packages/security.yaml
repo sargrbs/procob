@@ -35,10 +35,6 @@ security:
         - { path: ^/products/disable/, roles: ROLE_ADMIN }
         - { path: ^/order/edit/, roles: ROLE_ADMIN }
 
-        
-
-
-
 when@test:
     security:
         password_hashers:
