@@ -146,4 +146,25 @@ class UserController extends AbstractController
             'user' => $userDisabled,
         ]);
     }
+
+    /**
+     * @Route("/disable/{id}", name="app_user_disable", methods={"PUT"})
+     */
+    public function disableUser($id): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        $user
+            ->setStatus(false)
+            ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
+        ;
+
+        $doctrine = $this->getDoctrine()->getManager();
+        $doctrine->flush();
+
+        return $this->json([
+            'Success' => 'user '.$id. ' disabled',
+        ]);
+    }
 }

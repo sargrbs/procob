@@ -39,28 +39,44 @@ class ProductsRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Products[] Returns an array of Products objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findAll()
+    {
+        $entityManager = $this->getEntityManager();
 
-//    public function findOneBySomeField($value): ?Products
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $entityManager->createQuery(
+            'SELECT u.id, u.description, u.status, u.price
+            FROM App\Entity\Products u
+            ORDER BY u.description ASC'
+        );
+
+        return $query->getResult();
+    }
+
+    public function findAllActive($status)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u.id, u.description, u.price, u.status
+            FROM App\Entity\Products u
+            WHERE u.status = :stt
+            ORDER BY u.description ASC'
+        )->setParameter('stt', $status);
+
+        return $query->getResult();
+    }
+
+    public function findOne($id)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u.id, u.description, u.price, u.status
+            FROM App\Entity\Products u
+            WHERE u.id = :id
+            ORDER BY u.description ASC'
+        )->setParameter('id', $id);
+
+        return $query->getResult();
+    }
 }
