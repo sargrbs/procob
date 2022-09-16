@@ -12,3 +12,4 @@
 mysql
 docker-compose.yml
 docker-compose.override.yml
+migrations

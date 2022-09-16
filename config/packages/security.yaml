@@ -39,6 +39,7 @@ security:
         - { path: ^/order/disabled, roles: ROLE_ADMIN }
         - { path: ^/order/disable, roles: ROLE_ADMIN }
         - { path: ^/order/paid, roles: ROLE_ADMIN }
+        - { path: ^/order/unpaid, roles: ROLE_ADMIN }
         - { path: ^/order/editPaidPurchase, roles: ROLE_ADMIN }
         - { path: ^/user/editRoles/, roles: ROLE_ADMIN }
         - { path: ^/user/active, roles: ROLE_ADMIN }
