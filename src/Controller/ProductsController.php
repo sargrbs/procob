@@ -52,9 +52,11 @@ class ProductsController extends AbstractController
     /**
      * @Route("/findOne/{id}", name="app_products_show", methods={"GET"})
      */
-    public function show(Products $product): Response
-    {
-        return $this->render('products/show.html.twig', [
+    public function show($id): Response
+    {   
+        $entityManager = $this->getDoctrine()->getManager();
+        $product = $entityManager->getRepository(Products::class)->findOne($id);
+        return $this->json([
             'product' => $product,
         ]);
     }
@@ -148,7 +150,7 @@ class ProductsController extends AbstractController
                 "Error" => 'No produtc found for id' ." ".$id,
             ]);
         }
-        
+
         $produtc
             ->setStatus(false)
             ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
