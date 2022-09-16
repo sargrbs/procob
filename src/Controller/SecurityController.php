@@ -23,8 +23,14 @@ class SecurityController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
+
+        if(!$user){
+            $response = new JsonResponse();
+            $response->setData(['Error' => "Permission denied, login before access"]);
+        }
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $email = $propertyAccessor->getValue($user, 'email');
+
         return $this->json(['UserLogged' => $email, 'error' => $error]);
     }
 
