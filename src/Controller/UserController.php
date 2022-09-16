@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 /**
  * @Route("/user")
  */
@@ -40,6 +41,7 @@ class UserController extends AbstractController
             ->setName($data['name'])
             ->setEmail($data['email'])
             ->setStatus($data['status'])
+            ->setRoles($data['roles'])
             ->setPrivilege($data['privilege'])
             ->setPassword($hashedPassword)
             ->setCreatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
@@ -83,6 +85,7 @@ class UserController extends AbstractController
             ->setEmail($data['email'])
             ->setStatus($data['status'])
             ->setPrivilege($data['privilege'])
+            ->setRoles($data['roles'])
             ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
         ;
 
