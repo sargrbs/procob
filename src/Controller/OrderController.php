@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 class OrderController extends AbstractController
 {
     /**
-     * @Route("/", name="app_order_index", methods={"GET"})
+     * @Route("/findAll", name="app_order_index", methods={"GET"})
      */
     public function index(OrderRepository $orderRepository): Response
     {
@@ -95,17 +95,36 @@ class OrderController extends AbstractController
         $order
             ->setStatus($data['status'])
             ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
-        ;
-        if(count($data) > 1){
-            $order
-                ->setStatus($data['status'])
-                //if paid purchase must be updated
-                ->setPaidPurchase($data['paid_purchase']) 
-                ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
-            ;
-        }
-        
+        ;        
 
+        $doctrine = $this->getDoctrine()->getManager();
+        $doctrine->flush();
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $orderUpdated = $entityManager->getRepository(Order::class)->findOne($id);
+
+        return $this->json([
+            'OrderUpdated' => $orderUpdated,
+        ]);
+    }
+
+
+    /**
+     * @Route("/editPaidPurchase/{id}", name="app_order_paid_edit", methods={"PUT"})
+     */
+    public function editPaidPurchase(Request $request, $id): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $entityManager = $this->getDoctrine()->getManager();
+        $order = $entityManager->getRepository(Order::class)->find($id);
+       
+        $order
+            ->setStatus($data['status'])
+            //if paid purchase must be updated
+            ->setPaidPurchase($data['paid_purchase']) 
+            ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
+        ;
+    
         $doctrine = $this->getDoctrine()->getManager();
         $doctrine->flush();
 

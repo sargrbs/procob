@@ -17,7 +17,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserController extends AbstractController
 {
     /**
-     * @Route("/", name="app_user_index", methods={"GET"})
+     * @Route("/findAll", name="app_user_index", methods={"GET"})
      */
     public function index(UserRepository $userRepository): Response
     {
@@ -85,6 +85,28 @@ class UserController extends AbstractController
             ->setEmail($data['email'])
             ->setStatus($data['status'])
             ->setPrivilege($data['privilege'])
+            ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
+        ;
+
+        $doctrine = $this->getDoctrine()->getManager();
+        $doctrine->flush();
+
+        return $this->json([
+            'UserUpdated' => $user
+        ]);
+        
+    }
+
+    /**
+     * @Route("/editRoles/{id}", name="_editUser", methods={"PUT"})
+     */
+    public function editRoles(Request $request, $id): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $entityManager = $this->getDoctrine()->getManager();
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        $user
             ->setRoles($data['roles'])
             ->setUpdatedAt(new \DateTime("now", new \DateTimeZone("America/Sao_Paulo")))
         ;
